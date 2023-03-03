@@ -23,27 +23,31 @@ const Card = styled.div`
               css`background-color: #004e7c;` :
               '')
   }   
+`;
 
+const Cardheading = styled.h4`
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const ControlLink = styled.a`
-  text-decoration: none;
-  color: white;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  display: inline-block;
-  border: 2px solid white;
-  padding: 7px;
-  margin: 5px;
+text-decoration: none;
+color: white;
+border-radius: 50%;
+width: 45px;
+height: 45px;
+display: inline-block;
+border: 2px solid white;
+padding: 7px;
+margin: 5px;
 
-  &:hover, &:focus, &:active {
-    color: white;
-  }
+  &: hover, &: focus, &:active {
+  color: white;
+}
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+  background - color: rgba(255, 255, 255, 0.2);
+}
 `;
 
 export default function TaskCard({ task, setDraggedCard, handleComplete, handleDelete, handleMove }) {
@@ -87,7 +91,7 @@ export default function TaskCard({ task, setDraggedCard, handleComplete, handleD
       priority={task.priority}
       isCompleted={task.isCompleted}
       isDragging={isDragging}>
-      <h4>{task.taskName}</h4>
+      <Cardheading>{task.taskName}</Cardheading>
       <p className="duration-p">Duration: {task.duration}</p>
       <p className="priority-p">Priority: {task.priority}</p>
       <p className="controls-p">
