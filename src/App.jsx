@@ -66,7 +66,7 @@ function App() {
 
   useEffect(loadData, []);
 
-  function addTaskItem(taskName, duration, priority, day) {
+  function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt) {
     if (taskName === '' || duration === '' || priority === '' || day === '') {
       return;
     }
@@ -74,7 +74,9 @@ function App() {
       taskName,
       duration,
       priority,
-      day
+      day,
+      isCompleted,
+      createdAt
     }).then(loadData);
   }
 
