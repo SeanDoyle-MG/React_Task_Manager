@@ -1,60 +1,85 @@
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import React, { useState } from 'react';
 import TaskForm from './Components/TaskForm/TaskForm';
 import TaskFormTotal from './Components/TaskForm/TaskFormTotal';
 import TaskWeeklyList from './Components/TaskWeeklyList/TaskWeeklyList';
-import { PRIORITIES } from './Constants/Priorities';
 import { getDayIndex } from './Constants/Days';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
+const SERVER_URL = 'https://react-api-app.azurewebsites.net';
 
 function App() {
   // State to store count value
-  const [countIns, setCountIns] = useState(4);
-  const [countCom, setCountCom] = useState(1);
+  const [countIns, setCountIns] = useState(0);
+  const [countCom, setCountCom] = useState(0);
   const [countDel, setCountDel] = useState(0);
   const count = [];
   const [draggedCard, setDraggedCard] = useState(null);
   const [taskList, setTaskList] = useState([
     [],
-    [{
-      taskName: 'Learning React',
-      duration: '2 hours',
-      priority: PRIORITIES.High,
-      isCompleted: false,
-      createdAt: 1675904343555
-    }],
-    [],
-    [{
-      taskName: 'Leetcode exercise in Python',
-      duration: '30 minutes',
-      priority: PRIORITIES.Medium,
-      isCompleted: false,
-      createdAt: 1675904412722
-    },
-    {
-      taskName: 'React project state management',
-      duration: '4 hours',
-      priority: PRIORITIES.Low,
-      isCompleted: false,
-      createdAt: 1675904412725
-    },
-    {
-      taskName: 'Experiment with Styled Components',
-      duration: '1 hour',
-      priority: PRIORITIES.Low,
-      isCompleted: true,
-      createdAt: 1675904412729
-    }],
     [],
     [],
-    []
+    [],
+    [],
+    [],
+    [],
   ]);
+
+  const loadData = () => {
+    //axios
+    axios.get(SERVER_URL + '/api/tasks/')
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          //console.log('Database obj: ', response.data);
+          const dbCount = (response.data.length);
+          setCountIns(dbCount);
+          let taskList = [[], [], [], [], [], [], []];
+          const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          for (let task of response.data) {
+            const dayIndex = days.indexOf(task.day); // 0...6
+            setCountCom(task.isCompleted);
+            //console.log(task.isCompleted);
+            if (dayIndex >= 0) {
+              taskList[dayIndex].push({
+                taskName: task.taskName,
+                duration: task.duration,
+                priority: task.priority,
+                isCompleted: task.isCompleted,
+                createdAt: task.createdAt,
+              });
+              //console.log(task.isCompleted);
+              //console.log(taskList[dayIndex]);
+            }
+          }
+          setTaskList(taskList);
+        } else {
+          setTaskList([]);
+        }
+      })
+      .catch((error) => {
+        setTaskList([]);
+      });
+  }
+
+  useEffect(loadData, []);
+
+  function addTaskItem(taskName, duration, priority, day) {
+    if (taskName === '' || duration === '' || priority === '' || day === '') {
+      return;
+    }
+    axios.post(SERVER_URL + '/api/tasks/new', {
+      taskName,
+      duration,
+      priority,
+      day
+    }).then(loadData);
+  }
+
   const draggedCardRef = React.useRef();
   draggedCardRef.current = draggedCard;
-
 
   /********************************HELPER FUNCTIONS****************************/
   // helper function for handleDrop, deletion, and completion
@@ -202,6 +227,7 @@ function App() {
       </div>
       <main>
         <div className="Task-container">
+          <TaskForm addTaskItem={addTaskItem} />
           <TaskForm insertItem={insertItem} />
           <TaskFormTotal count={count} />
         </div>

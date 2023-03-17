@@ -57,7 +57,7 @@ export default function TaskForm(props) {
   }
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
+    <FormContainer action="#" method="GET" onSubmit={handleSubmit}>
       <Form>
         <FormGroup floating>
           <Input
@@ -117,6 +117,6 @@ export default function TaskForm(props) {
         </FormGroup>
         <Button type="submit">Submit</Button>
       </Form>
-    </FormContainer>
+    </FormContainer >
   );
 }
