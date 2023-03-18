@@ -67,9 +67,6 @@ function App() {
   useEffect(loadData, []);
 
   function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt) {
-    if (taskName === '' || duration === '' || priority === '' || day === '') {
-      return;
-    }
     axios.post(SERVER_URL + '/api/tasks/new', {
       taskName,
       duration,
@@ -122,8 +119,9 @@ function App() {
       const newTaskList = [...oldTaskList];
       newTaskList[dayIndex].push(newInsertion.item);
       incrementCount();
+      addTaskItem(addTaskItem);
       return newTaskList;
-    });
+    })
   }
 
   /********************************DRAG'N'DROP*********************************/
@@ -229,7 +227,6 @@ function App() {
       </div>
       <main>
         <div className="Task-container">
-          <TaskForm addTaskItem={addTaskItem} />
           <TaskForm insertItem={insertItem} />
           <TaskFormTotal count={count} />
         </div>
