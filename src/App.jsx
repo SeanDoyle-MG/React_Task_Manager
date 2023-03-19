@@ -9,7 +9,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+const SERVER_URL = 'http://localhost:8080';
 
 function App() {
   // State to store count value
@@ -119,7 +120,7 @@ function App() {
       const newTaskList = [...oldTaskList];
       newTaskList[dayIndex].push(newInsertion.item);
       incrementCount();
-      addTaskItem(addTaskItem);
+      //addTaskItem(addTaskItem);
       return newTaskList;
     })
   }
