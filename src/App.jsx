@@ -9,8 +9,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
-const SERVER_URL = 'http://localhost:8080';
+const SERVER_URL = 'https://react-api-app.azurewebsites.net';
 
 function App() {
   // State to store count value
@@ -30,19 +29,19 @@ function App() {
   ]);
 
   const loadData = () => {
-    //axios
-    axios.get(SERVER_URL + '/api/tasks/')
+    // axios
+    axios.get(SERVER_URL + '/api/tasks')
       .then((response) => {
         if (Array.isArray(response.data)) {
-          //console.log('Database obj: ', response.data);
           const dbCount = (response.data.length);
           setCountIns(dbCount);
           let taskList = [[], [], [], [], [], [], []];
           const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
           for (let task of response.data) {
             const dayIndex = days.indexOf(task.day); // 0...6
-            setCountCom(task.isCompleted);
-            //console.log(task.isCompleted);
+            if (task.isCompleted === 1) {
+              setCountCom(countCom + 1);
+            }
             if (dayIndex >= 0) {
               taskList[dayIndex].push({
                 taskName: task.taskName,
@@ -51,8 +50,6 @@ function App() {
                 isCompleted: task.isCompleted,
                 createdAt: task.createdAt,
               });
-              //console.log(task.isCompleted);
-              //console.log(taskList[dayIndex]);
             }
           }
           setTaskList(taskList);
@@ -120,7 +117,14 @@ function App() {
       const newTaskList = [...oldTaskList];
       newTaskList[dayIndex].push(newInsertion.item);
       incrementCount();
-      //addTaskItem(addTaskItem);
+      addTaskItem(
+        newInsertion.item.taskName,
+        newInsertion.item.duration,
+        newInsertion.item.priority,
+        newInsertion.position,
+        false,
+        new Date().getTime()
+      );
       return newTaskList;
     })
   }
