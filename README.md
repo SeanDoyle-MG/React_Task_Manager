@@ -35,6 +35,16 @@ User Stories for Task Management Application...
 - JAVASCRIPT
 - React
 
+### Explanation of API Endpoints Provided
+To provide a standard way of accessing the data the plugin is using AXIOS.
+
+| HTTP Method | |	Usage |
+|  :---:      | |  :---:  |
+| `GET`       |	|  `Receive a read-only data` |
+| `PUT`       | |  `Overwrite an existing task` |
+| `POST`      | |  `Creates a new task`
+| `DELETE`    | |  `Deletes the specified task` |
+
 ### Upcoming Improvements  
 - Export the data to Excel
 - Add a 24 hour time grid to the form

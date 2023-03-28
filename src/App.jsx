@@ -29,6 +29,7 @@ function App() {
   ]);
 
   const loadData = () => {
+    let taskCompletedCnt = 0;
     // axios
     axios.get(SERVER_URL + '/api/tasks')
       .then((response) => {
@@ -38,10 +39,11 @@ function App() {
           let taskList = [[], [], [], [], [], [], []];
           const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
           for (let task of response.data) {
-            const dayIndex = days.indexOf(task.day); // 0...6
             if (task.isCompleted === 1) {
-              setCountCom(countCom + 1);
+              taskCompletedCnt = taskCompletedCnt + 1;
+              setCountCom(taskCompletedCnt);
             }
+            const dayIndex = days.indexOf(task.day); // 0...6
             if (dayIndex >= 0) {
               taskList[dayIndex].push({
                 taskName: task.taskName,
@@ -73,6 +75,10 @@ function App() {
       isCompleted,
       createdAt
     }).then(loadData);
+  }
+
+  function deleteTaskItem(id) {
+    axios.delete(SERVER_URL + '/api/tasks/' + id).then(loadData);
   }
 
   const draggedCardRef = React.useRef();
@@ -122,7 +128,7 @@ function App() {
         newInsertion.item.duration,
         newInsertion.item.priority,
         newInsertion.position,
-        false,
+        newInsertion.item.isCompleted,
         new Date().getTime()
       );
       return newTaskList;
@@ -139,7 +145,28 @@ function App() {
       }
       newTaskList[dayIndex] = deleteItemFromDayList(newTaskList[dayIndex], item);
       const targetDayIndex = getDayIndex(targetDay);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       newTaskList[targetDayIndex].push(item);
+      axios.get(SERVER_URL + '/api/tasks')
+        .then((response) => {
+          let taskToBeUpdated = parseInt(item.createdAt);
+          if (Array.isArray(response.data)) {
+            for (let task of response.data) {
+              if (taskToBeUpdated === task.createdAt) {
+                let id = task.id;
+                let draggedDay = days[targetDayIndex];
+                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                  taskName: task.taskName,
+                  duration: task.duration,
+                  priority: task.priority,
+                  day: draggedDay,
+                  isCompleted: task.isCompleted,
+                  createdAt: task.createdAt
+                }).then(loadData);
+              }
+            }
+          }
+        });
       return newTaskList;
     });
   }
@@ -157,13 +184,32 @@ function App() {
       // negation in this case.
       const newTaskList = structuredClone(oldTaskList);
       const { item } = findItemByCreatedAt(itemCreatedAt, newTaskList);
+      axios.get(SERVER_URL + '/api/tasks')
+        .then((response) => {
+          let taskToBeUpdated = parseInt(item.createdAt);
+          if (Array.isArray(response.data)) {
+            for (let task of response.data) {
+              if (taskToBeUpdated === task.createdAt) {
+                let id = task.id;
+                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                  taskName: task.taskName,
+                  duration: task.duration,
+                  priority: task.priority,
+                  day: task.day,
+                  isCompleted: item.isCompleted,
+                  createdAt: task.createdAt
+                }).then(loadData);
+              }
+            }
+          }
+        });
       // Function to increment count by 1
       const incrementCount = () => {
         // Update state with incremented value
         if (item.isCompleted) {
-          setCountCom(countCom + 1);
-        } else {
           setCountCom(countCom - 1);
+        } else {
+          setCountCom(countCom + 1);
         }
       };
       if (item === null) {
@@ -211,6 +257,18 @@ function App() {
       };
       newTaskList[dayIndex] = deleteItemFromDayList(newTaskList[dayIndex], item);
       incrementCount();
+      axios.get(SERVER_URL + '/api/tasks')
+        .then((response) => {
+          let taskToBeDeleted = parseInt(itemCreatedAt);
+          if (Array.isArray(response.data)) {
+            for (let task of response.data) {
+              if (taskToBeDeleted === task.createdAt) {
+                let id = task.id;
+                deleteTaskItem(id);
+              }
+            }
+          }
+        });
       return newTaskList;
     });
   }
@@ -250,7 +308,7 @@ function App() {
         <p>Copyright &copy;2023</p>
       </footer>
     </div >
-  );
+  )
 }
 
 export default App;
