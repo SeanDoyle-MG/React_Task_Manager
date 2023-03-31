@@ -67,6 +67,10 @@ function App() {
   useEffect(loadData, []);
 
   function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt) {
+    if (taskName === '' || duration === '' || priority === '' || day === '') {
+      alert('Please enter values. White space is not allowed');
+      return;
+    }
     axios.post(SERVER_URL + '/api/tasks/new', {
       taskName,
       duration,

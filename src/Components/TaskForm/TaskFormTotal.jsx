@@ -24,21 +24,21 @@ export default function TaskFormTotal(props) {
                 <TaskTotalHeading>Weekly Task Totals</TaskTotalHeading>
                 <FormGroup floating>
                     <Input
-                        placeholder="Tasks Created" disabled>
+                        placeholder="Total Tasks" disabled>
                     </Input>
-                    <Label htmlFor="task-name">Tasks Created:      {props.count[0]}</Label>
+                    <Label htmlFor="task-name">Total Tasks:      {props.count[0]}</Label>
                 </FormGroup>
                 <FormGroup floating>
                     <Input
-                        placeholder="Tasks Completed" disabled>
+                        placeholder="Completed Tasks" disabled>
                     </Input>
-                    <Label htmlFor="task-name">Tasks Completed:     {props.count[1]}</Label>
+                    <Label htmlFor="task-name">Completed Tasks:  {props.count[1]}</Label>
                 </FormGroup>
                 <FormGroup floating>
                     <Input
-                        placeholder="Tasks Deleted" disabled>
+                        placeholder="Active Tasks" disabled>
                     </Input>
-                    <Label htmlFor="task-name">Tasks Deleted:      {props.count[2]}</Label>
+                    <Label htmlFor="task-name">Active Tasks:     {props.count[2]}</Label>
                 </FormGroup>
             </Form>
         </TaskTotalContainer>

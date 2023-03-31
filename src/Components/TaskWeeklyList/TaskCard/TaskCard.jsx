@@ -31,15 +31,15 @@ const Cardheading = styled.h4`
 `;
 
 const ControlLink = styled.a`
-text-decoration: none;
-color: white;
-border-radius: 50%;
-width: 45px;
-height: 45px;
-display: inline-block;
-border: 2px solid white;
-padding: 7px;
-margin: 5px;
+  text-decoration: none;
+  color: white;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: inline-block;
+  border: 2px solid white;
+  padding: 7px;
+  margin: 5px;
 
   &: hover, &: focus, &:active {
   color: white;
@@ -85,14 +85,16 @@ export default function TaskCard({ task, setDraggedCard, handleComplete, handleD
     handleMove(String(task.createdAt), 1); // 1 means down 
   }
 
+  //<Cardheading title={task.taskName}>{task.taskName}</Cardheading>
+
   return (
     <Card
       ref={drag}
       priority={task.priority}
       isCompleted={task.isCompleted}
       isDragging={isDragging}>
-      <Cardheading>{task.taskName}</Cardheading>
-      <p className="duration-p">Duration: {task.duration}</p>
+      <Cardheading title={task.taskName}>{task.taskName}</Cardheading>
+      <p className="duration-p">Duration: {task.duration}</p >
       <p className="priority-p">Priority: {task.priority}</p>
       <p className="controls-p">
         <ControlLink className="control-link" href="#" title="Complete Task!" onClick={completeClicked}>
@@ -108,6 +110,6 @@ export default function TaskCard({ task, setDraggedCard, handleComplete, handleD
           🠗
         </ControlLink>
       </p>
-    </Card>
+    </Card >
   );
 }
