@@ -8,6 +8,11 @@ const TaskListContainer = styled.div`
   text-align: center;
 `;
 
+const DailyHeading = styled.h2`
+  color: black;
+  text-align: center;
+`;
+
 const BoardContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -44,7 +49,7 @@ export default function TaskWeeklyList(props) {
 
   return (
     <TaskListContainer>
-      <h2>Daily Task List</h2>
+      <DailyHeading>Daily Task List</DailyHeading>
       <BoardContainer>{renderWeek()}</BoardContainer>
     </TaskListContainer>
 

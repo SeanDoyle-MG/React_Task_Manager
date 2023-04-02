@@ -28,6 +28,7 @@ const Card = styled.div`
 const Cardheading = styled.h4`
   text-overflow: ellipsis;
   overflow: hidden;
+  white-space: nowrap;
 `;
 
 const ControlLink = styled.a`
@@ -40,7 +41,7 @@ const ControlLink = styled.a`
   border: 2px solid white;
   padding: 7px;
   margin: 5px;
-
+  
   &: hover, &: focus, &:active {
   color: white;
 }
@@ -85,7 +86,18 @@ export default function TaskCard({ task, setDraggedCard, handleComplete, handleD
     handleMove(String(task.createdAt), 1); // 1 means down 
   }
 
-  //<Cardheading title={task.taskName}>{task.taskName}</Cardheading>
+  (function () {
+    let lastMouseOverCardheading = null;
+    document.addEventListener("mouseover", function (event) {
+      let Cardheading = event.target;
+      if (Cardheading instanceof Element && Cardheading !== lastMouseOverCardheading) {
+        lastMouseOverCardheading = Cardheading;
+        if (Cardheading.clientWidth < Cardheading.scrollWidth) {
+          Cardheading.setAttribute("title", Cardheading.textContent);
+        }
+      }
+    });
+  })();
 
   return (
     <Card
@@ -93,7 +105,7 @@ export default function TaskCard({ task, setDraggedCard, handleComplete, handleD
       priority={task.priority}
       isCompleted={task.isCompleted}
       isDragging={isDragging}>
-      <Cardheading title={task.taskName}>{task.taskName}</Cardheading>
+      <Cardheading>{task.taskName}</Cardheading>
       <p className="duration-p">Duration: {task.duration}</p >
       <p className="priority-p">Priority: {task.priority}</p>
       <p className="controls-p">

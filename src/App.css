@@ -1,5 +1,5 @@
 .App {
-    background-color: maroon;
+    background-color: burlywood;
     border: 1px double hsl(126, 73%, 9%);
     min-width: 400px;
 }
@@ -9,21 +9,21 @@
     width: 100%;
     align-items: center;
     justify-content: center;
-    height: 110px;
-    background-color: white;
+    height: 160px;
+    background-color: burlywood;
     margin: 0;
 }
 
 .Task-container {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 50px;
+    margin-top: 5px;
 }
 
 img {
-    max-width: 100%;
     margin: auto;
-    height: 90px;
+    height: 170px;
+    width: 175px;
 }
 
 .image {
@@ -41,7 +41,7 @@ img {
     flex-direction: column;
     text-align: center;
     color: black;
-    background-color: white;
+    background-color: burlywood;
     margin-top: 10px;
 }
 

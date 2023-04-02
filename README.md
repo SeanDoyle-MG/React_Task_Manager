@@ -17,11 +17,11 @@ The Website provides the user log and maintain their daily tasks for a given wee
 
 User Stories for Task Management Application...
 
--	As a college student, I would like to be able to record daily school assignments and projects, so I don't miss any important dates and requirements for completing my school work. 
+-	As a college student, I want to record daily school assignments and projects, so I don't miss any important dates and requirements for completing my school work. 
 
--	As a parent of a toddler, I need a tool that I can use to record and track the daily feeding and activities for my child. This information will be benefical for tracking his health and development.
+-	As a parent of a toddler, I want to record and track the daily feeding and activities for my child, so I can use this information to monitor his daily health and development.
 
--	As a Concession Stand Owner, I need a tool that I can use to record and track my product inventory.  This tool will enable me to have a better control with reducing my costs for the products I need. 
+-	As a Concession Stand Owner, I want to record and track my product inventory, so I have a better control of my expenses, which will increase my profit margin. 
 
 ## Dependencies
 

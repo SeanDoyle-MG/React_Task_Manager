@@ -32,6 +32,7 @@ export default function TaskForm(props) {
       },
       position: day
     }
+
     props.insertItem(newInsertion);
 
     setTaskName('');

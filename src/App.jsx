@@ -9,7 +9,9 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+const SERVER_URL = 'http://localhost:3000';
+
 
 function App() {
   // State to store count value
@@ -67,10 +69,6 @@ function App() {
   useEffect(loadData, []);
 
   function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt) {
-    if (taskName === '' || duration === '' || priority === '' || day === '') {
-      alert('Please enter values. White space is not allowed');
-      return;
-    }
     axios.post(SERVER_URL + '/api/tasks/new', {
       taskName,
       duration,
@@ -117,6 +115,16 @@ function App() {
 
   /********************************INSERTION***********************************/
   const insertItem = (newInsertion) => {
+    // Check for spaces entered by user for Task Name or Task Duration
+    var whiteSpace = /\s/;
+    if (whiteSpace.test(newInsertion.item.taskName)) {
+      alert('Please enter a Task Name. White space is not allowed');
+      return;
+    }
+    if (whiteSpace.test(newInsertion.item.duration)) {
+      alert('Please enter a Task Duration. White space is not allowed');
+      return;
+    }
     // Function to increment count by 1
     const incrementCount = () => {
       // Update state with incremented value
