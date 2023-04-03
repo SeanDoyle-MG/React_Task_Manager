@@ -120,7 +120,7 @@ function App() {
   /********************************INSERTION***********************************/
   const insertItem = (newInsertion) => {
     // Check for spaces entered by user for Task Name or Task Duration
-    var whiteSpace = /\s/;
+    var whiteSpace = (/^\s*$/);
     if (whiteSpace.test(newInsertion.item.taskName)) {
       alert('Please enter a Task Name. White space is not allowed');
       return;
