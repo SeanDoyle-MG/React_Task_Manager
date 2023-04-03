@@ -15,9 +15,9 @@ const SERVER_URL = 'http://localhost:3000';
 
 function App() {
   // State to store count value
-  const [countIns, setCountIns] = useState(0);
-  const [countCom, setCountCom] = useState(0);
-  const [countDel, setCountDel] = useState(0);
+  let [countIns, setCountIns] = useState(0);
+  let [countCom, setCountCom] = useState(0);
+  let [countAct, setCountAct] = useState(0);
   const count = [];
   const [draggedCard, setDraggedCard] = useState(null);
   const [taskList, setTaskList] = useState([
@@ -31,7 +31,6 @@ function App() {
   ]);
 
   const loadData = () => {
-    let taskCompletedCnt = 0;
     // axios
     axios.get(SERVER_URL + '/api/tasks')
       .then((response) => {
@@ -40,10 +39,14 @@ function App() {
           setCountIns(dbCount);
           let taskList = [[], [], [], [], [], [], []];
           const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          countAct = 0;
+          countCom = 0;
           for (let task of response.data) {
+            if (task.isCompleted === 0) {
+              (countAct = countAct + 1);
+            }
             if (task.isCompleted === 1) {
-              taskCompletedCnt = taskCompletedCnt + 1;
-              setCountCom(taskCompletedCnt);
+              (countCom = countCom + 1);
             }
             const dayIndex = days.indexOf(task.day); // 0...6
             if (dayIndex >= 0) {
@@ -57,11 +60,12 @@ function App() {
             }
           }
           setTaskList(taskList);
+          setCountAct(countAct);
+          setCountCom(countCom);
         } else {
           setTaskList([]);
         }
-      })
-      .catch((error) => {
+      }).catch((error) => {
         setTaskList([]);
       });
   }
@@ -126,15 +130,21 @@ function App() {
       return;
     }
     // Function to increment count by 1
-    const incrementCount = () => {
+    const incrementCountIns = () => {
       // Update state with incremented value
       setCountIns(countIns + 1);
-    };
+    }
+    // Function to increment count by 1
+    const incrementCountAct = () => {
+      // Update state with incremented value
+      setCountAct(countAct + 1);
+    }
     const dayIndex = getDayIndex(newInsertion.position);
     setTaskList(oldTaskList => {
       const newTaskList = [...oldTaskList];
       newTaskList[dayIndex].push(newInsertion.item);
-      incrementCount();
+      incrementCountIns();
+      incrementCountAct();
       addTaskItem(
         newInsertion.item.taskName,
         newInsertion.item.duration,
@@ -216,19 +226,15 @@ function App() {
           }
         });
       // Function to increment count by 1
-      const incrementCount = () => {
+      const incrementCountCom = () => {
         // Update state with incremented value
-        if (item.isCompleted) {
-          setCountCom(countCom - 1);
-        } else {
-          setCountCom(countCom + 1);
-        }
-      };
+        setCountCom(countCom + 1);
+      }
       if (item === null) {
         return oldTaskList;
       }
       item.isCompleted = !(item.isCompleted);
-      incrementCount();
+      incrementCountCom();
       return newTaskList;
     });
   }
@@ -262,13 +268,7 @@ function App() {
       if (item === null) {
         return oldTaskList;
       }
-      // Function to increment count by 1
-      const incrementCount = () => {
-        // Update state with incremented value
-        setCountDel(countDel + 1);
-      };
       newTaskList[dayIndex] = deleteItemFromDayList(newTaskList[dayIndex], item);
-      incrementCount();
       axios.get(SERVER_URL + '/api/tasks')
         .then((response) => {
           let taskToBeDeleted = parseInt(itemCreatedAt);
@@ -288,7 +288,7 @@ function App() {
   /*******************************Crete an array for weekly task totals*************************************/
   count.push(countIns);
   count.push(countCom);
-  count.push(countDel);
+  count.push(countAct);
 
   return (
     <div className="App">
