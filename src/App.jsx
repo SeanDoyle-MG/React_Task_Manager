@@ -9,9 +9,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
-const SERVER_URL = 'http://localhost:3000';
-
+const SERVER_URL = 'https://react-api-app.azurewebsites.net';
 
 function App() {
   // State to store count value
@@ -54,6 +52,7 @@ function App() {
                 taskName: task.taskName,
                 duration: task.duration,
                 priority: task.priority,
+                dayTaskOrd: task.dayTaskOrd,
                 isCompleted: task.isCompleted,
                 createdAt: task.createdAt,
               });
@@ -72,12 +71,13 @@ function App() {
 
   useEffect(loadData, []);
 
-  function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt) {
+  function addTaskItem(taskName, duration, priority, day, dayTaskOrd, isCompleted, createdAt) {
     axios.post(SERVER_URL + '/api/tasks/new', {
       taskName,
       duration,
       priority,
       day,
+      dayTaskOrd,
       isCompleted,
       createdAt
     }).then(loadData);
@@ -150,7 +150,8 @@ function App() {
         newInsertion.item.duration,
         newInsertion.item.priority,
         newInsertion.position,
-        newInsertion.item.isCompleted,
+        1,
+        0,  // initialize Task to Active Status
         new Date().getTime()
       );
       return newTaskList;
@@ -182,6 +183,7 @@ function App() {
                   duration: task.duration,
                   priority: task.priority,
                   day: draggedDay,
+                  dayTaskOrd: task.dayTaskOrd,
                   isCompleted: task.isCompleted,
                   createdAt: task.createdAt
                 }).then(loadData);
@@ -200,7 +202,7 @@ function App() {
       // of newItems, without cloning the inner content, the
       // changes will be reflected in the oldItems array too.
       // In Strict Mode, React calls this setter twice with
-      // the same oldItems value. If we cange the oldItems
+      // the same oldItems value. If we change the oldItems
       // value though, the second call will be based on the
       // changed oldItems value, which results in double
       // negation in this case.
@@ -218,6 +220,7 @@ function App() {
                   duration: task.duration,
                   priority: task.priority,
                   day: task.day,
+                  dayTaskOrd: task.dayTaskOrd,
                   isCompleted: item.isCompleted,
                   createdAt: task.createdAt
                 }).then(loadData);
@@ -239,6 +242,7 @@ function App() {
     });
   }
 
+
   /*******************************MOVE*****************************************/
   // direction: -1 is up, +1 is down
   const handleMove = (itemCreatedAt, direction) => {
@@ -253,12 +257,54 @@ function App() {
       }
       let otherIndex = taskIndex + direction;
       let swap = newTaskList[dayIndex][taskIndex];
+      let other = newTaskList[dayIndex][otherIndex];
       newTaskList[dayIndex][taskIndex] = newTaskList[dayIndex][otherIndex];
       newTaskList[dayIndex][otherIndex] = swap;
+      let currentDateTime = new Date().getTime();
+      let taskToBeUpdated = '';
+      axios.get(SERVER_URL + '/api/tasks')
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            for (let task of response.data) {
+              taskToBeUpdated = parseInt(swap.createdAt);
+              if (taskToBeUpdated === task.createdAt) {
+                let id = task.id;
+                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                  taskName: other.taskName,
+                  duration: other.duration,
+                  priority: other.priority,
+                  day: task.day,
+                  dayTaskOrd: other.dayTaskOrd,
+                  isCompleted: other.isCompleted,
+                  createdAt: currentDateTime
+                }).then(loadData);
+              }
+            }
+          }
+        });
+      axios.get(SERVER_URL + '/api/tasks')
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            for (let task of response.data) {
+              taskToBeUpdated = parseInt(other.createdAt);
+              if (taskToBeUpdated === task.createdAt) {
+                let id = task.id;
+                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                  taskName: swap.taskName,
+                  duration: swap.duration,
+                  priority: swap.priority,
+                  day: task.day,
+                  dayTaskOrd: swap.dayTaskOrd,
+                  isCompleted: swap.isCompleted,
+                  createdAt: swap.createdAt
+                }).then(loadData);
+              }
+            }
+          }
+        });
       return newTaskList;
     });
   }
-
 
   /*******************************DELETION*************************************/
   const handleDelete = (itemCreatedAt) => {
