@@ -10,8 +10,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'https://react-api-app.azurewebsites.net';
 
 const ContainerFluid = styled.div`
   display: flex;
