@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import styled from 'styled-components';
 import TaskForm from './Components/TaskForm/TaskForm';
 import TaskFormTotal from './Components/TaskForm/TaskFormTotal';
 import TaskWeeklyList from './Components/TaskWeeklyList/TaskWeeklyList';
@@ -9,7 +10,49 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Logo from "./Components/Images/toDoList.png";
 
-const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+//const SERVER_URL = 'https://react-api-app.azurewebsites.net';
+const SERVER_URL = 'http://localhost:3000';
+
+const ContainerFluid = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  background-color: burlywood;
+  margin: 0;
+`;
+
+const TaskContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 5px;
+`;
+
+const AppFooter = styled.footer`
+  height: 50px;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: black;
+  background-color: burlywood;
+  margin-top: 10px;
+`;
+
+const SiteLogo = styled.div`
+  flex-basis: 8%
+`;
+
+const Image = styled.img`
+  margin: auto;
+  height: 170px;
+  width: 175px;
+`;
+
+const PageHeading = styled.h1`
+  font - size: 65px;
+`;
 
 function App() {
   // State to store count value
@@ -52,9 +95,9 @@ function App() {
                 taskName: task.taskName,
                 duration: task.duration,
                 priority: task.priority,
-                dayTaskOrd: task.dayTaskOrd,
                 isCompleted: task.isCompleted,
                 createdAt: task.createdAt,
+                updatedAt: task.updatedAt
               });
             }
           }
@@ -71,15 +114,15 @@ function App() {
 
   useEffect(loadData, []);
 
-  function addTaskItem(taskName, duration, priority, day, dayTaskOrd, isCompleted, createdAt) {
+  function addTaskItem(taskName, duration, priority, day, isCompleted, createdAt, updatedAt) {
     axios.post(SERVER_URL + '/api/tasks/new', {
       taskName,
       duration,
       priority,
       day,
-      dayTaskOrd,
       isCompleted,
-      createdAt
+      createdAt,
+      updatedAt
     }).then(loadData);
   }
 
@@ -150,10 +193,11 @@ function App() {
         newInsertion.item.duration,
         newInsertion.item.priority,
         newInsertion.position,
-        1,
         0,  // initialize Task to Active Status
-        new Date().getTime()
+        new Date().getTime(),
+        0   // initialize updatedAt field
       );
+      console.log('New Task ', addTaskItem);
       return newTaskList;
     })
   }
@@ -183,9 +227,9 @@ function App() {
                   duration: task.duration,
                   priority: task.priority,
                   day: draggedDay,
-                  dayTaskOrd: task.dayTaskOrd,
                   isCompleted: task.isCompleted,
-                  createdAt: task.createdAt
+                  createdAt: task.createdAt,
+                  updatedAt: task.updatedAt
                 }).then(loadData);
               }
             }
@@ -220,24 +264,18 @@ function App() {
                   duration: task.duration,
                   priority: task.priority,
                   day: task.day,
-                  dayTaskOrd: task.dayTaskOrd,
                   isCompleted: item.isCompleted,
-                  createdAt: task.createdAt
+                  createdAt: task.createdAt,
+                  updatedAt: task.updatedAt
                 }).then(loadData);
               }
             }
           }
         });
-      // Function to increment count by 1
-      const incrementCountCom = () => {
-        // Update state with incremented value
-        setCountCom(countCom + 1);
-      }
       if (item === null) {
         return oldTaskList;
       }
       item.isCompleted = !(item.isCompleted);
-      incrementCountCom();
       return newTaskList;
     });
   }
@@ -264,42 +302,39 @@ function App() {
       let taskToBeUpdated = '';
       axios.get(SERVER_URL + '/api/tasks')
         .then((response) => {
+          let firstPromise, secondPromise;
           if (Array.isArray(response.data)) {
             for (let task of response.data) {
               taskToBeUpdated = parseInt(swap.createdAt);
               if (taskToBeUpdated === task.createdAt) {
                 let id = task.id;
-                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                firstPromise = axios.put(SERVER_URL + '/api/tasks/' + id, {
                   taskName: other.taskName,
                   duration: other.duration,
                   priority: other.priority,
                   day: task.day,
-                  dayTaskOrd: other.dayTaskOrd,
                   isCompleted: other.isCompleted,
-                  createdAt: currentDateTime
-                }).then(loadData);
+                  createdAt: other.createdAt,
+                  updatedAt: currentDateTime
+                });
               }
             }
-          }
-        });
-      axios.get(SERVER_URL + '/api/tasks')
-        .then((response) => {
-          if (Array.isArray(response.data)) {
             for (let task of response.data) {
               taskToBeUpdated = parseInt(other.createdAt);
               if (taskToBeUpdated === task.createdAt) {
                 let id = task.id;
-                axios.put(SERVER_URL + '/api/tasks/' + id, {
+                secondPromise = axios.put(SERVER_URL + '/api/tasks/' + id, {
                   taskName: swap.taskName,
                   duration: swap.duration,
                   priority: swap.priority,
                   day: task.day,
-                  dayTaskOrd: swap.dayTaskOrd,
                   isCompleted: swap.isCompleted,
-                  createdAt: swap.createdAt
-                }).then(loadData);
+                  createdAt: swap.createdAt,
+                  updatedAt: swap.updatedAt
+                })
               }
             }
+            Promise.allSettled([firstPromise, secondPromise]).then(loadData);
           }
         });
       return newTaskList;
@@ -338,19 +373,17 @@ function App() {
 
   return (
     <div className="App">
-      <div className="Container-fluid">
-        <div className="image">
-          <img src={Logo} alt="Logo" />
-        </div>
-        <div className="text">
-          <h1>Task Management</h1>
-        </div>
-      </div>
+      <ContainerFluid>
+        <SiteLogo>
+          <Image img src={Logo} alt="Logo" />
+        </SiteLogo>
+        <PageHeading>Task Management</PageHeading>
+      </ContainerFluid>
       <main>
-        <div className="Task-container">
+        <TaskContainer>
           <TaskForm insertItem={insertItem} />
           <TaskFormTotal count={count} />
-        </div>
+        </TaskContainer>
         <DndProvider backend={HTML5Backend}>
           <TaskWeeklyList
             taskList={taskList}
@@ -361,11 +394,11 @@ function App() {
             handleMove={handleMove} />
         </DndProvider>
       </main>
-      <footer className="App-footer">
+      <AppFooter>
         React Project Inspiration from Zsolt Nagy.
         <p>Copyright &copy;2023</p>
-      </footer>
-    </div >
+      </AppFooter>
+    </div>
   )
 }
 

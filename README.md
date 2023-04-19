@@ -7,7 +7,7 @@ Design Document
 
 Sean Doyle
 
-Project Link: https://seandoyle-mg.github.io/React_Task_manager/
+Project Link: https://seandoyle-mg.github.io/React_Task_Manager/
 
 ### Description of Project
 
