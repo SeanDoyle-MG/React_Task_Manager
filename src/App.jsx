@@ -196,7 +196,6 @@ function App() {
         new Date().getTime(),
         0   // initialize updatedAt field
       );
-      console.log('New Task ', addTaskItem);
       return newTaskList;
     })
   }
